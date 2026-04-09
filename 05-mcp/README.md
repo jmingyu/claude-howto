@@ -105,14 +105,6 @@ Server-Sent Events transport is deprecated in favor of `http` but still supporte
 claude mcp add --transport sse legacy-server https://example.com/sse
 ```
 
-### WebSocket Transport
-
-WebSocket transport for persistent bidirectional connections:
-
-```bash
-claude mcp add --transport ws realtime-server wss://example.com/mcp
-```
-
 ### Windows-Specific Note
 
 On native Windows (not WSL), use `cmd /c` for npx commands:

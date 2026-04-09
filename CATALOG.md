@@ -63,7 +63,6 @@ Commands are user-invoked shortcuts that execute specific actions.
 | `/login` | Authenticate with Anthropic | Access features |
 | `/logout` | Sign out | Switch accounts |
 | `/sandbox` | Toggle sandbox mode | Safe command execution |
-| `/vim` | Toggle vim mode | Vim-style editing |
 | `/doctor` | Run diagnostics | Troubleshoot issues |
 | `/reload-plugins` | Reload installed plugins | Plugin management |
 | `/release-notes` | Show release notes | Check new features |
@@ -453,7 +452,6 @@ cp 02-memory/personal-CLAUDE.md ~/.claude/CLAUDE.md
 | **Agent Hook Type** | Hooks that spawn a subagent instead of running a shell command | Set `"type": "agent"` in hook configuration |
 | **Prompt Hook Type** | Hooks that inject prompt text into the conversation | Set `"type": "prompt"` in hook configuration |
 | **MCP Elicitation** | MCP servers can request user input during tool execution | Handle via `Elicitation` and `ElicitationResult` hook events |
-| **WebSocket MCP Transport** | WebSocket-based transport for MCP server connections | Use `"transport": "websocket"` in MCP server config |
 | **Plugin LSP Support** | Language Server Protocol integration via plugins | Configure LSP servers in `plugin.json` for editor features |
 | **Managed Drop-ins** | Organization-managed drop-in configurations (v2.1.83) | Admin-configured via managed policies; auto-applied to all users |
 

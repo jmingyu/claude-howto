@@ -63,7 +63,6 @@
 | `/login` | 通过 Anthropic 认证 | 访问功能 |
 | `/logout` | 登出 | 切换账号 |
 | `/sandbox` | 切换 sandbox 模式 | 安全执行命令 |
-| `/vim` | 切换 vim 模式 | 类 Vim 编辑 |
 | `/doctor` | 运行诊断 | 排查问题 |
 | `/reload-plugins` | 重新加载已安装的 plugins | 插件管理 |
 | `/release-notes` | 显示更新说明 | 查看新功能 |
