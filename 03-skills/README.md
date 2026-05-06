@@ -66,19 +66,20 @@ This means you can install many Skills without context penalty—Claude only kno
 ```mermaid
 sequenceDiagram
     participant User
-    participant Claude as Claude
-    participant System as System
-    participant Skill as Skill
+    participant Claude
+    participant System
+    participant SkillInst as Skill Instructions
+    participant SkillRes as Skill Resources
 
     User->>Claude: "Review this code for security issues"
     Claude->>System: Check available skills (metadata)
     System-->>Claude: Skill descriptions loaded at startup
     Claude->>Claude: Match request to skill description
-    Claude->>Skill: bash: read code-review/SKILL.md
-    Skill-->>Claude: Instructions loaded into context
+    Claude->>SkillInst: Read code-review/SKILL.md
+    SkillInst-->>Claude: Level 2: Instructions loaded
     Claude->>Claude: Determine: Need templates?
-    Claude->>Skill: bash: read templates/checklist.md
-    Skill-->>Claude: Template loaded
+    Claude->>SkillRes: Read templates/checklist.md
+    SkillRes-->>Claude: Level 3: Template loaded
     Claude->>Claude: Execute skill instructions
     Claude->>User: Comprehensive code review
 ```
@@ -149,7 +150,7 @@ disable-model-invocation: true              # Only user can invoke
 user-invocable: false                       # Hide from slash menu
 allowed-tools: Read, Grep, Glob             # Restrict tool access
 model: opus                                 # Specific model to use
-effort: high                                # Effort level override (low, medium, high, max)
+effort: high                                # Effort level override (low, medium, high, xhigh, max)
 context: fork                               # Run in isolated subagent
 agent: Explore                              # Which agent type (with context: fork)
 shell: bash                                 # Shell for commands: bash (default) or powershell
@@ -172,7 +173,7 @@ paths: "src/api/**/*.ts"               # Glob patterns limiting when skill activ
 | `user-invocable` | `false` = hidden from the `/` menu. Only Claude can invoke it automatically. |
 | `allowed-tools` | Comma-separated list of tools the skill may use without permission prompts. |
 | `model` | Model override while the skill is active (e.g., `opus`, `sonnet`). |
-| `effort` | Effort level override while the skill is active: `low`, `medium`, `high`, or `max`. |
+| `effort` | Effort level override while the skill is active: `low`, `medium`, `high`, `xhigh`, or `max`. Available levels depend on the model — `xhigh` is the Claude Code default for Opus 4.7. |
 | `context` | `fork` to run the skill in a forked subagent context with its own context window. |
 | `agent` | Subagent type when `context: fork` (e.g., `Explore`, `Plan`, `general-purpose`). |
 | `shell` | Shell used for `!`command`` substitutions and scripts: `bash` (default) or `powershell`. |
@@ -241,6 +242,7 @@ Skills support dynamic values that are resolved before the skill content reaches
 | `$ARGUMENTS[N]` or `$N` | Access specific argument by index (0-based) |
 | `${CLAUDE_SESSION_ID}` | Current session ID |
 | `${CLAUDE_SKILL_DIR}` | Directory containing the skill's SKILL.md file |
+| `${CLAUDE_EFFORT}` | Current effort level (`low`, `medium`, `high`, `xhigh`, or `max`). Useful for branching skill behavior: e.g., `[ "${CLAUDE_EFFORT}" = "max" ] && deep_analysis` (v2.1.120+) |
 | `` !`command` `` | Dynamic context injection — runs a shell command and inlines the output |
 
 **Example:**
@@ -597,6 +599,8 @@ ls ~/.claude/skills/
 ls .claude/skills/
 ```
 
+> **Tip (v2.1.121+):** Type to filter the `/skills` interactive menu — useful when many skills are installed.
+
 ### Testing a Skill
 
 Two ways to test:
@@ -739,6 +743,19 @@ Skill descriptions are loaded at **1% of the context window** (fallback: **8,000
 - **Tool misuse**: Malicious Skills can invoke tools in harmful ways
 - **Treat like installing software**: Only use Skills from trusted sources
 
+### Disabling shell substitution in skills
+
+Skills support the `` !`command` `` syntax to inject the output of shell commands into the prompt before Claude sees it. In security-sensitive environments (shared enterprise deployments, locked-down CI runners) you can disable this substitution entirely via the `disableSkillShellExecution` setting (added in **v2.1.91**):
+
+```jsonc
+// ~/.claude/settings.json or managed policy
+{
+  "disableSkillShellExecution": true
+}
+```
+
+When `disableSkillShellExecution` is `true`, any `` !`command` `` markers in a skill are left as literal text instead of being executed — removing the skill-level shell-injection attack surface without disabling skills themselves. Consider combining this with an `allowedTools` allowlist for defense in depth.
+
 ## Skills vs Other Features
 
 | Feature | Invocation | Best For |
@@ -806,6 +823,10 @@ Once you start building skills seriously, two things become essential: a library
 - [Hooks Guide](../06-hooks/) - Event-driven automation
 
 ---
-**Last Updated**: April 9, 2026
-**Claude Code Version**: 2.1.97
-**Compatible Models**: Claude Sonnet 4.6, Claude Opus 4.6, Claude Haiku 4.5
+**Last Updated**: May 2, 2026
+**Claude Code Version**: 2.1.126
+**Sources**:
+- https://code.claude.com/docs/en/skills
+- https://code.claude.com/docs/en/settings
+- https://code.claude.com/docs/en/changelog
+**Compatible Models**: Claude Sonnet 4.6, Claude Opus 4.7, Claude Haiku 4.5

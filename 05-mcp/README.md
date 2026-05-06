@@ -164,6 +164,8 @@ MCP servers configured in your Claude.ai account are automatically available in 
 
 Claude.ai MCP connectors are also available in `--print` mode (v2.1.83+), enabling non-interactive and scripted usage.
 
+> **Startup note (v2.1.117+):** Concurrent connect is the default when both local and claude.ai MCP servers are configured (previously serial), reducing startup latency when multiple servers are in use.
+
 To disable Claude.ai MCP servers in Claude Code, set the `ENABLE_CLAUDEAI_MCP_SERVERS` environment variable to `false`:
 
 ```bash
@@ -204,6 +206,27 @@ When MCP tool descriptions exceed 10% of the context window, Claude Code automat
 | `ENABLE_TOOL_SEARCH` | `false` | Disabled; all tool descriptions sent in full |
 
 > **Note:** Tool search requires Sonnet 4 or later, or Opus 4 or later. Haiku models are not supported for tool search.
+
+### Bypassing Tool Search per Server (v2.1.121+)
+
+If a particular MCP server's tools are needed on every turn, mark its
+configuration with `"alwaysLoad": true` to skip tool-search deferral and
+keep its tools always available:
+
+```json
+{
+  "mcpServers": {
+    "always-on-tool": {
+      "command": "node",
+      "args": ["./tools/always.js"],
+      "alwaysLoad": true
+    }
+  }
+}
+```
+
+Use sparingly — every always-loaded tool consumes context that could
+otherwise be used for tool search to surface a more relevant tool.
 
 ## Dynamic Tool Updates
 
@@ -1108,6 +1131,11 @@ export GITHUB_TOKEN="your_token"
 - [Claude API Documentation](https://docs.anthropic.com)
 
 ---
-**Last Updated**: April 9, 2026
-**Claude Code Version**: 2.1.97
-**Compatible Models**: Claude Sonnet 4.6, Claude Opus 4.6, Claude Haiku 4.5
+
+**Last Updated**: May 2, 2026
+**Claude Code Version**: 2.1.126
+**Sources**:
+- https://code.claude.com/docs/en/mcp
+- https://code.claude.com/docs/en/changelog
+- https://github.com/anthropics/claude-code/releases/tag/v2.1.117
+**Compatible Models**: Claude Sonnet 4.6, Claude Opus 4.7, Claude Haiku 4.5

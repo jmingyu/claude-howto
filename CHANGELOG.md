@@ -1,5 +1,158 @@
 # Changelog
 
+## [v2.1.126] — 2026-05-02
+
+### Synced to Claude Code v2.1.126
+
+Bumps tutorial coverage from Claude Code v2.1.119 → v2.1.126 (May 1, 2026 release).
+v2.1.120 was rolled back on its first release day (2026-04-24) but re-released
+successfully on 2026-04-28 with the originally-reported regressions fixed.
+v2.1.124 and v2.1.125 were skipped by Anthropic and never released.
+
+### Added (English docs)
+
+- `claude project purge [path]` subcommand (v2.1.126) — deletes all Claude Code
+  state for a project (transcripts, tasks, debug logs, file-edit history,
+  prompt history, `~/.claude.json` entry). Supports `--dry-run`, `-y/--yes`,
+  `-i/--interactive`, `--all`. Documented in `10-cli/README.md`.
+- `claude plugin prune` subcommand (v2.1.121) — removes orphaned auto-installed
+  plugin dependencies; `plugin uninstall --prune` cascades. Documented in
+  `07-plugins/README.md`.
+- `claude ultrareview [target]` subcommand (v2.1.120) — runs `/ultrareview`
+  non-interactively from CI/scripts, prints findings to stdout, exits 0/1 on
+  success/failure; supports `--json` and `--timeout <minutes>`. Documented in
+  `10-cli/README.md`.
+- `${CLAUDE_EFFORT}` placeholder available inside skill content (v2.1.120) —
+  resolves to the current effort level. Documented in `03-skills/README.md`.
+- `alwaysLoad` MCP server config option (v2.1.121) — when `true`, all tools
+  from that server skip tool-search deferral. Documented in `05-mcp/README.md`.
+- `PostToolUse.hookSpecificOutput.updatedToolOutput` now works for all tools
+  (v2.1.121), previously MCP-only. Documented in `06-hooks/README.md`.
+- `ANTHROPIC_BEDROCK_SERVICE_TIER` environment variable (v2.1.122) — selects
+  Bedrock service tier (`default`, `flex`, `priority`). Documented in
+  `10-cli/README.md` env-var table.
+- `--dangerously-skip-permissions` extended-path coverage (v2.1.121, v2.1.126)
+  — now bypasses prompts for writes to `.claude/skills/`, `.claude/agents/`,
+  `.claude/commands/`, `.claude/`, `.git/`, `.vscode/`, shell config files.
+  Catastrophic removal commands (`rm -rf /` etc.) still prompt. Documented in
+  `09-advanced-features/README.md` permission-modes section.
+- OAuth code paste fallback (v2.1.126) — `claude auth login` accepts the OAuth
+  code pasted into the terminal when the browser callback can't reach
+  localhost (WSL2, SSH, containers). Documented in `10-cli/README.md`.
+- Type-to-filter `/skills` menu (v2.1.121). Documented in `03-skills/README.md`.
+- `AI_AGENT` environment variable (v2.1.120) — set on subprocesses so `gh` can
+  attribute traffic to Claude Code. Documented in `10-cli/README.md` env-var
+  table.
+
+### Changed
+
+- `--from-pr` (v2.1.119) and `/resume` PR-URL search (v2.1.122) now both
+  support GitHub, GitHub Enterprise, GitLab, and Bitbucket URLs.
+- Windows: Git for Windows / Git Bash no longer required (v2.1.120) — Claude
+  Code uses PowerShell as the shell tool when Git Bash is absent. From v2.1.126,
+  PowerShell is the primary shell when the PowerShell tool is enabled. Detection
+  extended to PowerShell 7 installed via Microsoft Store, MSI without PATH, or
+  `.NET global tool`. Documented in `09-advanced-features/README.md` platform
+  notes.
+- `/model` picker now lists models from your gateway's `/v1/models` endpoint
+  when `ANTHROPIC_BASE_URL` points at an Anthropic-compatible gateway
+  (v2.1.126). Documented in `10-cli/README.md`.
+- `--dangerously-skip-permissions` no longer prompts for writes to a much
+  broader allowlist (see Added). Catastrophic removals still prompt.
+- Image paste auto-downscale (v2.1.126) — images larger than 2000px are
+  downscaled on paste; oversized images in history are auto-removed and the
+  request retried. (Tutorial-relevant only as a safety/UX note.)
+
+### Security
+
+- Fixed `allowManagedDomainsOnly` / `allowManagedReadPathsOnly` being ignored
+  when a higher-priority managed-settings source lacked a `sandbox` block
+  (v2.1.126).
+
+### Notes for translation maintainers
+
+The `vi/`, `zh/`, `uk/`, and `ja/` localized trees are community-maintained
+and may lag the English source. Contributors syncing translations should diff
+against the English files updated in this release.
+
+## [v2.4.0] — 2026-04-27
+
+### Synced to Claude Code v2.1.119
+
+Bumps tutorial coverage from Claude Code v2.1.112 → v2.1.119 (April 23, 2026 release).
+v2.1.120 was published April 24, briefly rolled back the same day due to regressions,
+and re-released on April 28 with fixes — it is now part of the normal release line.
+A subsequent v2.1.126 (May 1, 2026) is the next stable target and is covered in the
+v2.1.126 entry above.
+
+### Added (English docs)
+
+- Native binary packaging note (v2.1.113) — CLI now ships per-platform native binaries
+- `bfs`/`ugrep` Glob/Grep substitution footnote on native macOS/Linux builds (v2.1.117)
+- `mcp_tool` hook type with example (v2.1.118)
+- `duration_ms` field on PostToolUse / PostToolUseFailure inputs (v2.1.119)
+- `prUrlTemplate` setting (v2.1.119) and expanded `--from-pr` provider list (GitLab, Bitbucket)
+- `cleanupPeriodDays` extended scope (checkpoints + tasks + shell-snapshots + backups, v2.1.117)
+- Plugin marketplace enforcement on every lifecycle event (v2.1.117) and `hostPattern`/`pathPattern` regex (v2.1.119)
+- New env vars: `DISABLE_UPDATES`, `CLAUDE_CODE_HIDE_CWD`, `CLAUDE_CODE_FORK_SUBAGENT`, `OTEL_LOG_TOOL_DETAILS`, `ENABLE_TOOL_SEARCH` Vertex opt-in
+- New slash commands: `/btw`, `/theme` with custom themes
+- `/usage` canonical command (merges `/cost` + `/stats`, v2.1.118)
+- Forked subagents (`CLAUDE_CODE_FORK_SUBAGENT=1`, v2.1.117)
+- Auto mode `"$defaults"` token (v2.1.118)
+- `wslInheritsWindowsSettings` managed policy (v2.1.118)
+- Vim visual / visual-line modes (v2.1.118)
+- `claude install [version]` and `claude plugin tag` subcommands
+
+### Changed
+
+- Documentation host migrated: `docs.anthropic.com/en/docs/claude-code/*` → `code.claude.com/docs/en/*`
+- Opus 4.7 effort levels: `xhigh` is now the Claude Code default since the 2026-04-16 launch; Opus 4.7 native context window confirmed at 1M (v2.1.117 fixed `/context` miscounting it as 200K)
+- Default effort raised from `medium` to `high` for Pro/Max subscribers on Opus 4.6 / Sonnet 4.6 (v2.1.117)
+- `STYLE_GUIDE.md` Source URL updated from Claude Apps article to `code.claude.com/docs/en/changelog`
+
+### Deprecated (tracked, not removed)
+
+- `includeCoAuthoredBy` setting → use `attribution.commit` / `attribution.pr`
+- `voiceEnabled` setting → use `voice.enabled`
+
+### Notes for translation maintainers
+
+The `vi/`, `zh/`, and `uk/` localized trees are community-maintained and may lag the English source. Contributors syncing translations should diff against the English files updated in this release.
+
+## v2.1.112 — 2026-04-16
+
+### Highlights
+
+- Sync all English tutorials with Claude Code v2.1.112 and the new Opus 4.7 model (`claude-opus-4-7`), including the new `xhigh` effort level (default on Opus 4.7, between `high` and `max`), two new built-in slash commands (`/ultrareview`, `/less-permission-prompts`), auto-mode no longer requiring `--enable-auto-mode` for Max subscribers on Opus 4.7, the PowerShell tool on Windows, the "Auto (match terminal)" theme, and plan files named after prompts. All 18 EN doc footers bumped to Claude Code v2.1.112. @Luong NGUYEN
+
+### Features
+
+- Add complete Ukrainian (uk) localization across all modules, root docs, examples, and references (039dde2) @Evgenij I
+
+### Bug Fixes
+
+- Correct pre-tool-check.sh hook protocol bugs (bce7cf8) @yarlinghe
+- Change bad mermaid example to text block to pass CI (b8a7b1f) @Evgenij I
+- Fix CP1251 encoding in Ukrainian claude_concepts_guide.md ToC (d970cc6) @Evgenij I
+- Replace stub Ukrainian README with full translation, fix broken anchors (f6d73e2) @Evgenij I
+- Correct Claude Code version to 2.1.97 across all footers (63a1416) @Luong NGUYEN
+- Apply 2026-04-09 documentation accuracy updates (e015f39) @Luong NGUYEN
+
+### Documentation
+
+- Sync to Claude Code v2.1.112 (Opus 4.7, `xhigh` effort, `/ultrareview`, `/less-permission-prompts`, PowerShell tool, Auto-match-terminal theme) @Luong NGUYEN
+- Sync to Claude Code v2.1.110 (TUI, push notifications, session recap) (15f0085) @Luong NGUYEN
+- Sync to Claude Code v2.1.101 with `/team-onboarding`, `/ultraplan`, Monitor tool (2deba3a) @Luong NGUYEN
+- Sync Vietnamese documentation with English source (561c6cb) @Thiên Toán
+- Update Last Updated date and Claude Code version across all files (7f2e773) @Luong NGUYEN
+- Add Ukrainian language link to language switcher (9c224ff) @Luong NGUYEN
+- Remove contributors section (f07313d) @Luong NGUYEN
+- Update GitHub metrics to 21,800+ stars, 2,585+ forks (4f55374) @Luong NGUYEN
+
+**Full Changelog**: https://github.com/luongnv89/claude-howto/compare/v2.3.0...v2.1.112
+
+---
+
 ## v2.3.0 — 2026-04-07
 
 ### Features
